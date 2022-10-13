@@ -23,7 +23,7 @@ const listUser = async (req, res) => {
                 JOIN urls
                 ON users.id = urls."userId"
                 JOIN access
-                ON users.id = access."userId"
+                ON users.id = access."creatorId"
                 GROUP BY users.id
                 WHERE users.id = $1;
             `,
@@ -52,12 +52,12 @@ const listRanking = async (req, res) => {
                     users.id,
                     users.name,
                     COUNT (urls.userId) AS "linksCount",
-                    COUNT (access.userId) AS "visitCount"
+                    COUNT (access.creatorId) AS "visitCount"
                 FROM users
                 JOIN urls
                 ON users.id = urls."userId"
                 JOIN access
-                ON users.id = access."userId"
+                ON users.id = access."creatorId"
                 GROUP BY users.id
                 ORDER BY "visitCount"
                 LIMIT 10;

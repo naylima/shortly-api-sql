@@ -68,7 +68,7 @@ const listShortUrl = async (req, res) => {
         res.redirect(link);
 
         await connection.query(
-            `INSERT INTO access ("userId", "urlId") VALUES ($1, $2);`,
+            `INSERT INTO access ("creatorId", "urlId") VALUES ($1, $2);`,
             [url.rows[0].userId , url.rows[0].id]
         );
 
