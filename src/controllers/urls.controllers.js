@@ -3,13 +3,9 @@ import { connection } from '../database/database.js';
 
 const postUrl = async (req, res) => {
 
-    const { url } = req.body;
     const shortUrl = nanoid(8);
     const user = res.locals.user;
-
-    if (new URL(url) === false) {
-        return res.sendStatus(422);
-    }
+    const url = res.locals.url;
  
     try {
 
@@ -51,7 +47,7 @@ const listUrl = async (req, res) => {
     }
 };
 
-const listShortUrl = async (req, res) => {
+const openUrl = async (req, res) => {
 
     const { shortUrl } = req.params;
 
@@ -66,14 +62,15 @@ const listShortUrl = async (req, res) => {
             return res.sendStatus(404);
         };
         
-        const link = url.rows[0].url;
-        res.redirect(link);
+        const link = url.rows[0].url;        
 
         await connection.query(
             `INSERT INTO access ("creatorId", "urlId") VALUES ($1, $2);`,
             [url.rows[0].userId , url.rows[0].id]
         );
-
+        
+        res.redirect(link);
+        
     } catch (error) {
         console.log(error.message);
         return res.sendStatus(500); 
@@ -119,4 +116,4 @@ const deleteUrl = async (req, res) => {
     }
 };
 
-export { postUrl, listUrl, listShortUrl, deleteUrl };
+export { postUrl, listUrl, openUrl, deleteUrl };
