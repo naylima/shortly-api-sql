@@ -26,23 +26,22 @@ const signUp = async (req, res) => {
 const signIn = async (req, res) => {
 
     const user = res.locals.user;
-    const email = res.locals.email;
     const token = uuid();
 
     try {       
 
         await connection.query(
-            `INSERT INTO sessions ("userId", "email", "token") 
-            VALUES ($1, $2, $3);`,
-            [user.id, email, token]                    
+            `INSERT INTO sessions ("userId", "token") 
+            VALUES ($1, $2);`,
+            [user.id, token]                    
         );
         
-        return res.status(200).send(token);
+        return res.status(200).send({"token": token});
 
     } catch (error) {
         console.log(error.message);
         res.sendStatus(500);
     }
-}
+};
 
 export { signUp, signIn };

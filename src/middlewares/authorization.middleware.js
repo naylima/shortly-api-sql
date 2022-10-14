@@ -19,7 +19,7 @@ async function hasToken (req, res, next) {
         };
 
         const user = await connection.query(
-            `SELECT id, name, email WHERE id = $1;`,
+            `SELECT id, name, email FROM users WHERE id = $1;`,
             [session.rows[0].userId]
         )
 

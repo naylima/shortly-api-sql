@@ -4,7 +4,6 @@ import { connection } from '../database/database.js';
 async function userValidade (req, res, next) {
     
     const {email, password} = req.body;
-    res.locals.email = email;
 
     try {
 
@@ -19,8 +18,9 @@ async function userValidade (req, res, next) {
             next();
         }
 
-        return res.sendStatus(401);
-
+        else {
+            return res.sendStatus(401);
+        }
         
     } catch (error) {
         console.log(error.message);

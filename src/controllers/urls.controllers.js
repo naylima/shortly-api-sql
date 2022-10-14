@@ -5,10 +5,12 @@ const postUrl = async (req, res) => {
 
     const { url } = req.body;
     const shortUrl = nanoid(8);
-    res.locals.user = user;
+    const user = res.locals.user;
 
-    if (new URL(url) === false) return res.sendStatus(422);
-
+    if (new URL(url) === false) {
+        return res.sendStatus(422);
+    }
+ 
     try {
 
         await connection.query(
@@ -17,7 +19,7 @@ const postUrl = async (req, res) => {
             [user.id, url, shortUrl ]
         );
 
-        res.status(201).send(shortUrl);
+        res.status(201).send({"shortUrl": shortUrl});
         
     } catch (error) {
         console.log(error.message);
@@ -28,12 +30,12 @@ const postUrl = async (req, res) => {
 
 const listUrl = async (req, res) => {
     
-    const id = req.params;
+    const { id } = req.params;
 
     try {
         
         const url = await connection.query(
-            `SELECT id, url, shortUrl FROM urls WHERE id = $1;`,
+            `SELECT id, url, "shortUrl" FROM urls WHERE id = $1;`,
             [id]
         );
 
@@ -41,7 +43,7 @@ const listUrl = async (req, res) => {
             return res.sendStatus(404);
         };
 
-        res.sendStatus(200);
+        res.status(200).send(url.rows[0]);
         
     } catch (error) {
         console.log(error.message);
@@ -51,12 +53,12 @@ const listUrl = async (req, res) => {
 
 const listShortUrl = async (req, res) => {
 
-    const shortUrl = req.params;
+    const { shortUrl } = req.params;
 
     try {
 
         const url = await connection.query(
-            `SELECT * FROM urls WHERE shortUrl = $1;`,
+            `SELECT * FROM urls WHERE "shortUrl" = $1;`,
             [shortUrl]
         );
 
@@ -82,7 +84,7 @@ const listShortUrl = async (req, res) => {
 const deleteUrl = async (req, res) => {
 
     const { id } = req.params;
-    res.locals.user = user;
+    const user = res.locals.user;
 
     try {
 
@@ -92,20 +94,20 @@ const deleteUrl = async (req, res) => {
         );
 
         if (isUrl.rows.length === 0) {
-            return res.status(404);
+            return res.sendStatus(404);
         };
 
         const userHasUrl = await connection.query(
-            `SELECT * FROM urls WHERE id = $1 and userId = $2;`,
+            `SELECT * FROM urls WHERE id = $1 AND "userId" = $2;`,
             [id, user.id]
         );
 
-        if (userHasUrl .rows.length === 0) {
-            return res.status(401);
-        };
+        if (userHasUrl.rows.length === 0) {
+            return res.sendStatus(401);
+        }; 
 
         await connection.query(
-            `DELETE * FROM urls WHERE id = $1;`,
+            `DELETE FROM urls WHERE id = $1;`,
             [id]
         );
 
