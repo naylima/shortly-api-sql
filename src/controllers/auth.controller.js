@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import bcrypt from 'bcrypt';
-import { connection } from '../database/database.js';
+import * as authRepository from '../repositories/auth.repository.js';
 
 const signUp = async (req, res) => {
 
@@ -9,12 +9,7 @@ const signUp = async (req, res) => {
 
     try {
 
-        await connection.query( 
-            `INSERT INTO users ("name", "email", "password") 
-            VALUES ($1, $2, $3);`,
-            [name, email, hashPassword]
-        );
-
+        await authRepository.insertUser(name, email, hashPassword);
         res.sendStatus(201);
         
     } catch (error) {
@@ -28,15 +23,10 @@ const signIn = async (req, res) => {
     const user = res.locals.user;
     const token = uuid();
 
-    try {       
+    try {
 
-        await connection.query(
-            `INSERT INTO sessions ("userId", "token") 
-            VALUES ($1, $2);`,
-            [user.id, token]                    
-        );
-        
-        return res.status(200).send({"token": token});
+        await authRepository.insertSession(user, token);        
+        res.status(200).send({"token": token});
 
     } catch (error) {
         console.log(error.message);

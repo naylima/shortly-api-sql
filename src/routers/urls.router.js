@@ -1,7 +1,7 @@
 import express from 'express';
 import hasToken from '../middlewares/authorization.middleware.js';
 import urlValidade from '../middlewares/urlValidate.middleware.js';
-import * as urlsController from '../controllers/urls.controllers.js';
+import * as urlsController from '../controllers/urls.controller.js';
 
 const router = express.Router();
 
